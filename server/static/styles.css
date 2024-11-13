@@ -1,0 +1,25 @@
+body {
+    margin:20px;
+    background: #eee;
+}
+
+table {
+    width: 70%;
+    border-collapse: collapse;
+    margin: 10px 0;
+    font-size: 0.9em;
+    font-family: sans-serif;
+    min-width: 600px;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.15);
+}
+
+th {
+    text-align: center;
+    padding: 10px 15px;
+}
+
+td {
+    padding: 10px 15px;
+}
+
+
