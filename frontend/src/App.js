@@ -29,7 +29,7 @@ function App() {
 
 const [prod, setProd] = useState(null);
 const [categ, setCateg] = useState(null);
-const [categId, setCategId] = React.useState('');
+const [categId, setCategId] = useState('');
 
 const selectChange = (event) => {
   setCategId(event.target.value);

@@ -1,5 +1,5 @@
 {
-    "name": "helloapp",
+    "name": "web_app_api",
     "version": "1.0.0",
     "scripts": {
         "start": "nodemon app.js"
