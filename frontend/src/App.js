@@ -7,6 +7,8 @@ import FingerprintOutlinedIcon from '@mui/icons-material/FingerprintOutlined';
 import ConstructionOutlinedIcon from '@mui/icons-material/ConstructionOutlined';
 import PictureAsPdfOutlinedIcon from '@mui/icons-material/PictureAsPdfOutlined';
 
+import { SnackbarProvider, useSnackbar } from 'notistack'; // (npm install notistack)
+
 import Box from '@mui/material/Box';
 import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
@@ -27,13 +29,35 @@ function HomeIcon(props) {
 
 function App() {
 
+// data from api
 const [prod, setProd] = useState(null);
 const [categ, setCateg] = useState(null);
-const [categId, setCategId] = useState('');
 
+
+
+//snackbar
+const { enqueueSnackbar } = useSnackbar();
+
+const handleClick = () => {
+  console.log("click!");
+  enqueueSnackbar('I love snacks.');
+};
+
+const handleClickVariant = (variant) => () => {
+  // variant could be success, error, warning, info, or default
+  console.log("click!");
+  enqueueSnackbar('This is a message!', { variant });
+};
+
+
+
+//select
+const [categId, setCategId] = React.useState('');
 const selectChange = (event) => {
   setCategId(event.target.value);
 };
+
+
 
 useEffect(() => {
       fetch("http://localhost:8000/prod")
@@ -53,7 +77,7 @@ useEffect(() => {
     },[])
 
 
-
+//table
 const columns = [
   { field: 'id', headerName: 'Id', width: 70 },
   { field: 'name', headerName: 'Наименование', width: 400 },
@@ -65,28 +89,26 @@ const paginationModel = { page: 0, pageSize: 5 };
 
 
 return ( 
-    <div>
+      <div>
+      <SnackbarProvider maxSnack={3}>
       <Button 
-            onClick={() => {
-              alert('clicked');
-            }
-            } 
+            onClick={handleClick} 
             startIcon={<ConstructionOutlinedIcon />}
             variant="outlined" 
             size="small"
             color="success"
       >Hello world</Button>
       <Stack direction="row" spacing = {3}>
-        <IconButton area-label="ConstructionOutlinedIcon" color="secondary" >
+        <IconButton area-label="ConstructionOutlinedIcon" color="secondary" onClick={handleClickVariant('success')}>
           <ConstructionOutlinedIcon />
         </IconButton>
-        <IconButton area-label="FingerprintOutlinedIcon" color="primary">
+        <IconButton area-label="FingerprintOutlinedIcon" color="primary" onClick={handleClickVariant('error')}>
             <FingerprintOutlinedIcon/>
         </IconButton>
-        <IconButton area-label="PictureAsPdfOutlinedIcon" color="primary">
+        <IconButton area-label="PictureAsPdfOutlinedIcon" color="primary" onClick={handleClickVariant('warning')}>
             <PictureAsPdfOutlinedIcon/>
         </IconButton>
-        <IconButton area-label="SvgIcon" color="primary">
+        <IconButton area-label="SvgIcon" color="primary" onClick={handleClickVariant('info')}>
               <SvgIcon>
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -103,7 +125,7 @@ return (
                 </svg>
               </SvgIcon>
         </IconButton>
-        <IconButton area-label="HomeIcon" color="primary">
+        <IconButton area-label="HomeIcon" color="primary" onClick={handleClickVariant('default')}>
           <HomeIcon color="success" />
         </IconButton>
       </Stack>
@@ -154,8 +176,16 @@ return (
         sx={{ border: 0 }}
       />
     </Paper>
+    </SnackbarProvider>
     </div>
   );   
 }
 
-export default App;
+export default function appWithSnackbar()  {
+  return (
+  <SnackbarProvider maxSnack={10}>
+      <App />
+  </SnackbarProvider>
+);
+}
+// export default App;
