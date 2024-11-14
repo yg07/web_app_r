@@ -89,8 +89,7 @@ const paginationModel = { page: 0, pageSize: 5 };
 
 
 return ( 
-      <div>
-      <SnackbarProvider maxSnack={3}>
+    <div>
       <Button 
             onClick={handleClick} 
             startIcon={<ConstructionOutlinedIcon />}
@@ -176,8 +175,7 @@ return (
         sx={{ border: 0 }}
       />
     </Paper>
-    </SnackbarProvider>
-    </div>
+  </div>
   );   
 }
 
