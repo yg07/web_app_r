@@ -39,13 +39,11 @@ const [categ, setCateg] = useState(null);
 const { enqueueSnackbar } = useSnackbar();
 
 const handleClick = () => {
-  console.log("click!");
   enqueueSnackbar('I love snacks.');
 };
 
 const handleClickVariant = (variant) => () => {
   // variant could be success, error, warning, info, or default
-  console.log("click!");
   enqueueSnackbar('This is a message!', { variant });
 };
 
@@ -181,7 +179,7 @@ return (
 
 export default function appWithSnackbar()  {
   return (
-  <SnackbarProvider maxSnack={10}>
+  <SnackbarProvider maxSnack={10} autoHideDuration={2000} anchorOrigin={{horizontal: 'right', vertical: 'top'}}>
       <App />
   </SnackbarProvider>
 );
