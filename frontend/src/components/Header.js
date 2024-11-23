@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Box,Tabs,Tab } from '@mui/material';
+import { Box,Tabs,Tab, Paper } from '@mui/material';
 import {MenuContext} from '../context/GlobalState';
 import { Link } from 'react-router-dom';
 
@@ -34,17 +34,22 @@ export default function Header() {
   };
 
   return (
-    <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
-      <Tabs
-        value={menuItem}
-        onChange={handleChange}
-      >
-        <Tab label="Orders" to="/order" component={Link} />
-        <Tab label="Products" to="/prod" component={Link} />
-        <Tab label="Partners" to="/predpr" component={Link} />
-        <Tab label="Discovery" to="/discovery" component={Link} />
-
-      </Tabs>
+    <Box sx={{ 
+          borderBottom: 1, 
+          borderColor: 'divider',
+          mb: 1
+          }}>
+      <Paper elevation={5}>
+        <Tabs
+          value={menuItem}
+          onChange={handleChange}
+        >
+          <Tab label="Orders" to="/order" component={Link} />
+          <Tab label="Products" to="/prod" component={Link} />
+          <Tab label="Partners" to="/predpr" component={Link} />
+          <Tab label="Discovery" to="/discovery" component={Link} />
+        </Tabs>
+      </Paper>
     </Box>
   );
 }

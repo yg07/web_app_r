@@ -23,7 +23,7 @@ import FingerprintOutlinedIcon from '@mui/icons-material/FingerprintOutlined';
 import ConstructionOutlinedIcon from '@mui/icons-material/ConstructionOutlined';
 import PictureAsPdfOutlinedIcon from '@mui/icons-material/PictureAsPdfOutlined';
 
-import { SnackbarProvider, useSnackbar } from 'notistack'; // (npm install notistack)
+import { useSnackbar } from 'notistack'; // (npm install notistack)
 import { DataGrid } from '@mui/x-data-grid';
 import PropTypes from 'prop-types';
 
@@ -140,7 +140,7 @@ const paginationModel = { page: 0, pageSize: 5 };
 
 
 return (
-  <div>
+  <>
     <Box sx={{ width: '100%' }}>
       <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
         <Tabs value={value} onChange={handleChange} aria-label="basic tabs example">
@@ -287,15 +287,13 @@ return (
 
       </CustomTabPanel>
     </Box>
-  </div>
+  </>
   );   
 }
 
 export default function Discovery()  {
   return (
-    <SnackbarProvider maxSnack={10} autoHideDuration={3000} anchorOrigin={{horizontal: 'right', vertical: 'top'}}>
         <App />
-    </SnackbarProvider>
   );
 }
 

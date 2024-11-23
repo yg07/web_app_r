@@ -9,13 +9,12 @@ import { MenuContext, DataProvider } from "./context/GlobalState";
 import { SnackbarProvider } from 'notistack'; // (npm install notistack)
 
 
-
 function App() {
 
   const [menuItem, setMenuItem] = React.useState(0);
 
   return (
-    <div style={{ maxWidth: "100%", margin: "4rem auto" }}>
+    <div style={{ maxWidth: "100%", margin: "0.5rem" }}>
       <MenuContext.Provider value = {{menuItem,setMenuItem}}>
         <DataProvider>
           <BrowserRouter future={{

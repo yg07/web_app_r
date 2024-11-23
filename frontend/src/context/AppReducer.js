@@ -1,7 +1,7 @@
 export default function AppReducer(state, action) {
   switch (action.type) {
     case 'REMOVE':
-      // here... remode DB.target(id)
+      // here... remove DB.target(id)
       return {
         ...state,
         prod: action.target === 'prod'? state.prod.filter( data => {
@@ -17,7 +17,6 @@ export default function AppReducer(state, action) {
         ...state,
         prod: action.target === 'prod'? [action.payload, ...state.prod]:state.prod,
         categ: action.target === 'categ'? [action.payload, ...state.categ]:state.categ,
-        users: [action.payload, ...state.users]
       }
     case 'EDIT':
       //here...  update DB.target
