@@ -1,42 +1,35 @@
 import React, { createContext, useReducer } from 'react';
 import AppReducer from './AppReducer';
 
-
-// Create Context
-
+//menu
 export const MenuContext = createContext();
 
-// export const MenuContextProvider = ({ children}) => {
-//   const [menuItem, setMenuItem] = React.useState(0);
-//   return (
-//       <MenuContext.Provider value={{menuItem, setMenuItem}}>
-//           {children}
-//       </MenuContext.Provider>
-//   );
-// };
+export const MenuContextProvider = ({ children}) => {
+  const [menuItem, setMenuItem] = React.useState(0);
+  return (
+      <MenuContext.Provider value={{menuItem, setMenuItem}}>
+          {children}
+      </MenuContext.Provider>
+  );
+};
 
 
+//prod & categ
+export const ProdContext = createContext();
 
-export const DataContext = createContext();
+export const ProdContextProvider = ({ children }) => {
 
-// Provider Component
-export const DataProvider = ({ children }) => {
-
-  // Initial State
-  const [prod, setProd] = React.useState(null);
-  const [categ, setCateg] = React.useState(null);
-  
   React.useEffect(() => {
     fetch("http://localhost:8000/prod")
     .then(response =>  response.json())
-    .then( res => setProd(res))
+    .then( res => fetchData('prod', res))
     .catch((ex) => {
       console.log("Error: " + ex.statusText);
       alert("Error: " + ex.statusText);
   });
   fetch("http://localhost:8000/categ")
     .then(response =>  response.json())
-    .then( res => setCateg(res))
+    .then( res => fetchData('categ', res))
     .catch((ex) => {
       console.log("Error: " + ex.statusText);
       alert("Error: " + ex.statusText);
@@ -44,12 +37,21 @@ export const DataProvider = ({ children }) => {
   },[])
 
   const initialState = {
-    prod: prod,
-    categ: categ  
+    prod: [],
+    categ: []  
   }
   const [state, dispatch] = useReducer(AppReducer, initialState);
 
   // Actions
+  const fetchData = (tabl,data) => {
+    dispatch({
+      type: 'FETCH',
+      target: tabl,
+      payload: data
+    })
+  }
+
+
   const removeData = (tabl,id) => {
     dispatch({
       type: 'REMOVE',
@@ -75,14 +77,15 @@ export const DataProvider = ({ children }) => {
   }
 
   return (
-    <DataContext.Provider value={{
+    <ProdContext.Provider value={{
       prod: state.prod,
       categ: state.categ,
+      fetchData,
       removeData,
       addData,
       editData
     }}>
       {children}
-    </DataContext.Provider>
+    </ProdContext.Provider>
   )
 }

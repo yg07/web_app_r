@@ -5,18 +5,16 @@ import Order from './components/Order'
 import Prod from './components/Prod';
 import Discovery from './components/Discovery';
 import NotFound from './components/NotFound';
-import { MenuContext, DataProvider } from "./context/GlobalState";
+import { MenuContextProvider, ProdContextProvider } from "./context/GlobalState";
 import { SnackbarProvider } from 'notistack'; // (npm install notistack)
 
 
 function App() {
 
-  const [menuItem, setMenuItem] = React.useState(0);
-
   return (
     <div style={{ maxWidth: "100%", margin: "0.5rem" }}>
-      <MenuContext.Provider value = {{menuItem,setMenuItem}}>
-        <DataProvider>
+      <MenuContextProvider>
+        <ProdContextProvider>
           <BrowserRouter future={{
                           v7_startTransition: true,
                           v7_relativeSplatPath: true,
@@ -30,8 +28,8 @@ function App() {
                 </Route>
             </Routes>
           </BrowserRouter>
-        </DataProvider>
-      </MenuContext.Provider>
+        </ProdContextProvider>
+      </MenuContextProvider>
     </div>
   )
 }

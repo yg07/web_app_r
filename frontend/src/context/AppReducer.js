@@ -1,7 +1,12 @@
 export default function AppReducer(state, action) {
   switch (action.type) {
+    case 'FETCH':
+      return {
+        ...state,
+        prod: action.target === 'prod'? action.payload : state.prod,
+        categ: action.target === 'categ'? action.payload : state.categ,
+      }
     case 'REMOVE':
-      // here... remove DB.target(id)
       return {
         ...state,
         prod: action.target === 'prod'? state.prod.filter( data => {
@@ -12,14 +17,12 @@ export default function AppReducer(state, action) {
                                             }) : state.categ,
       }
     case 'ADD':
-        //here... action.payload -> DB.target -> id -> correct action.payload.id
       return {
         ...state,
         prod: action.target === 'prod'? [action.payload, ...state.prod]:state.prod,
         categ: action.target === 'categ'? [action.payload, ...state.categ]:state.categ,
       }
     case 'EDIT':
-      //here...  update DB.target
       return {
         ...state,
         prod: action.target === 'prod'? state.prod.map(data => {

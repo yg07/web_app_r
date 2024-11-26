@@ -22,6 +22,12 @@ import {Button,
 import FingerprintOutlinedIcon from '@mui/icons-material/FingerprintOutlined';
 import ConstructionOutlinedIcon from '@mui/icons-material/ConstructionOutlined';
 import PictureAsPdfOutlinedIcon from '@mui/icons-material/PictureAsPdfOutlined';
+import EditOutlinedIcon from '@mui/icons-material/EditOutlined';
+import DeleteOutlinedIcon from '@mui/icons-material/DeleteOutlined';
+
+import './Discovery.css'
+
+
 
 import { useSnackbar } from 'notistack'; // (npm install notistack)
 import { DataGrid } from '@mui/x-data-grid';
@@ -131,9 +137,29 @@ React.useEffect(() => {
 //table
 const columns = [
   { field: 'id', headerName: 'Id', width: 70 },
-  { field: 'name', headerName: 'Наименование', width: 400 },
-  { field: 'price', headerName: 'Цена', width: 130 },
-  { field: 'categ_id', headerName: 'categ_id', type: 'number',width: 90 },
+  { field: 'name', headerName: 'Наименование', width: 300 },
+  { field: 'price', headerName: 'Цена', width: 80 },
+  { field: 'categ', headerName: 'Категория', width: 200 },
+  {
+    // field: 'tools',
+    width: 100,
+    sortable: false,
+    disableClickEventBubbling: true,
+    hideable: false,
+    disableColumnFilter: true,
+    renderCell: () => {
+      return (
+        <>
+          <IconButton area-label = 'EditOutlinedIcon' color="primary" onClick={(e => enqueueSnackbar('Edit',{variant: 'info'}))}>
+            <EditOutlinedIcon />
+          </IconButton>
+          <IconButton area-label = 'DeleteOutlinedIcon' color="primary" onClick={(e => enqueueSnackbar('Delete',{variant: 'info'}))}>
+            <DeleteOutlinedIcon />
+          </IconButton>
+        </>
+      )
+    }
+  }
 ];
 
 const paginationModel = { page: 0, pageSize: 5 };
@@ -280,8 +306,13 @@ return (
             columns={columns}
             initialState={{ pagination: { paginationModel } }}
             pageSizeOptions={[5, 10]}
-            checkboxSelection
-            sx={{ border: 0 }}
+            // checkboxSelection
+            disableRowSelectionOnClick
+            sx={{ border: 0,
+                "& .MuiDataGrid-row:hover":  {
+                  backgroundColor: "#cce5ff" // Or 'transparent' or whatever color you'd like
+                }
+            }}
           />
         </Paper>
 

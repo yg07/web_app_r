@@ -25,7 +25,7 @@ app.use(express.static("static"));
 
 //get data
 app.get("/prod", function (_, res) {
-  connection.query(`SELECT id, name, price, categ_id FROM prod`)
+  connection.query(`SELECT p.id, p.name, p.price, c.name as categ FROM prod p left join categ c on p.categ_id = c.id`)
     .then(([rows, fields]) => {
       // console.log("GET prod...");
       res.send(rows);
@@ -36,7 +36,6 @@ app.get("/prod", function (_, res) {
     })
 });
 
-//get categ
 app.get("/categ", function (_, res) {
   connection.query(`SELECT id, name FROM categ`)
     .then(([rows, fields]) => {
@@ -54,6 +53,20 @@ app.post("/prod", function (req, res) {
   if (!req.body) return res.sendStatus(400);
   const sql = `insert into prod(name, price, categ_id) 
                 values('${req.body.name}',${req.body.price},${req.body.categ_id})`;
+  connection.query(sql)
+    .then(result => {
+      // console.log(result[0]);
+      res.send({ statusText: `Data inserted: ${result[0].affectedRows} row(s).` })
+    })
+    .catch(err => {
+      console.log('Error: ' + err.sqlMessage);
+      res.status(500).send({ status: 500, data: null, message: err.sqlMessage });
+    })
+});
+
+app.post("/categ", function (req, res) {
+  if (!req.body) return res.sendStatus(400);
+  const sql = `insert into categ(name) values('${req.body.name}')`;
   connection.query(sql)
     .then(result => {
       // console.log(result[0]);
@@ -83,7 +96,24 @@ app.put("/prod", function (req, res) {
       console.log('Error: ' + err.sqlMessage);
       res.status(500).send({ status: 500, data: null, message: err.sqlMessage });
     })
-})
+});
+
+
+app.put("/categ", function (req, res) {
+  if (!req.body) return res.sendStatus(400);
+  const sql = `update categ 
+                set name = '${req.body.name}', 
+                where id = ${req.body.id}`;
+  connection.query(sql)
+    .then(result => {
+      // console.log(result[0]);
+      res.send({ statusText: `Data updated: ${result[0].affectedRows} row(s).` })
+    })
+    .catch(err => {
+      console.log('Error: ' + err.sqlMessage);
+      res.status(500).send({ status: 500, data: null, message: err.sqlMessage });
+    })
+});
 
 
 //delete data
@@ -99,7 +129,22 @@ app.delete("/prod", function (req, res) {
       console.log('Error: ' + err.sqlMessage);
       res.status(500).send({ status: 500, data: null, message: err.sqlMessage });
     })
-})
+});
+
+app.delete("/categ", function (req, res) {
+  if (!req.body) return res.sendStatus(400);
+  const sql = `delete from categ where id = ${req.body.id}`;
+  connection.query(sql)
+    .then(result => {
+      // console.log(result[0]);
+      res.send({ statusText: `Data deleted: ${result[0].affectedRows} row(s).` })
+    })
+    .catch(err => {
+      console.log('Error: ' + err.sqlMessage);
+      res.status(500).send({ status: 500, data: null, message: err.sqlMessage });
+    })
+});
+
 
 
 app.listen(8000);
