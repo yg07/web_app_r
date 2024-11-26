@@ -20,7 +20,13 @@ export default function Prod() {
 
   //snackbar
   const { enqueueSnackbar } = useSnackbar();
-  const {prod, categ } = React.useContext(ProdContext)
+  const {stateProd: { dataProd }, dispatchProd } =  React.useContext(ProdContext);
+
+  React.useEffect(() => {
+    dispatchProd();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  },[]);
+  
 
   const prodColumns = [
     { field: 'id' },
@@ -85,7 +91,7 @@ export default function Prod() {
       <Box sx={{width: '29%'}}>
         <Paper elevation={5}>
           <DataGrid
-              rows={categ}
+              // rows={Categ}
               columns={categColumns}
               initialState={{ pagination: { paginationModel } }}
               pageSizeOptions={[5, 10, 20]}
@@ -102,7 +108,7 @@ export default function Prod() {
       <Box  sx={{width: '70%'}}>
         <Paper elevation={5}>
           <DataGrid
-              rows={prod}
+              rows={dataProd}
               columns={prodColumns}
               initialState={{ pagination: { paginationModel } }}
               pageSizeOptions={[5, 10, 20]}

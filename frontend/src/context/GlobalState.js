@@ -1,5 +1,12 @@
 import React, { createContext, useReducer } from 'react';
-import AppReducer from './AppReducer';
+// import AppReducer from './AppReducer';
+
+const reducer = (state, { type, payload }) => {
+  if (type === "loading") return { statusProd: "loading" };
+  if (type === "finished") return { statusProd: "finished", dataProd: payload };
+  if (type === "error") return { statusProd: "idle", errorProd: payload };
+  return state;
+};
 
 //menu
 export const MenuContext = createContext();
@@ -14,78 +21,40 @@ export const MenuContextProvider = ({ children}) => {
 };
 
 
-//prod & categ
+//prod
 export const ProdContext = createContext();
 
 export const ProdContextProvider = ({ children }) => {
 
-  React.useEffect(() => {
+  const initialState = {
+    statusProd: 'idle',
+    dataProd: undefined,
+    errorProd: undefined
+  }
+  const [stateProd, dispatch] = useReducer(reducer, initialState);
+
+  const asyncDispatch  = () => {
+    dispatch({ type: "loading" });
     fetch("http://localhost:8000/prod")
     .then(response =>  response.json())
-    .then( res => fetchData('prod', res))
+    .then( res => {
+      dispatch({ type: "finished", payload: res });
+    })
     .catch((ex) => {
       console.log("Error: " + ex.statusText);
-      alert("Error: " + ex.statusText);
+      dispatch({type: 'error', payload: ex.statusText});
   });
-  fetch("http://localhost:8000/categ")
-    .then(response =>  response.json())
-    .then( res => fetchData('categ', res))
-    .catch((ex) => {
-      console.log("Error: " + ex.statusText);
-      alert("Error: " + ex.statusText);
-  });
-  },[])
-
-  const initialState = {
-    prod: [],
-    categ: []  
-  }
-  const [state, dispatch] = useReducer(AppReducer, initialState);
-
-  // Actions
-  const fetchData = (tabl,data) => {
-    dispatch({
-      type: 'FETCH',
-      target: tabl,
-      payload: data
-    })
-  }
-
-
-  const removeData = (tabl,id) => {
-    dispatch({
-      type: 'REMOVE',
-      target: tabl,
-      payload: id
-    })
-  }
-
-  const addData = (tabl,data) => {
-    dispatch({
-      type: 'ADD',
-      target: tabl,
-      payload: data
-    })
-  }
-
-  const editData = (tabl,data) => {
-    dispatch({
-      type: 'EDIT',
-      target: tabl,
-      payload: data
-    })
-  }
-
+  };
+  
   return (
     <ProdContext.Provider value={{
-      prod: state.prod,
-      categ: state.categ,
-      fetchData,
-      removeData,
-      addData,
-      editData
+        stateProd,
+        dispatchProd: asyncDispatch
     }}>
       {children}
     </ProdContext.Provider>
   )
 }
+
+
+
