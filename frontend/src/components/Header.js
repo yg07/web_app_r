@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { Box,Tabs,Tab, Paper } from '@mui/material';
-import {MenuContext} from '../context/GlobalState';
+import { MenuContext } from '../context/MenuContext';
 import { Link } from 'react-router-dom';
 
 

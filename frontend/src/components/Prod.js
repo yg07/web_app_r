@@ -1,28 +1,23 @@
 import * as React from 'react';
 import './Prod.css'
-import { ProdContext } from '../context/GlobalState';
+import { ProdContext } from '../context/ProdContext';
+import { CategContext } from "../context/CategContext";
 import { Box, Paper, IconButton, Typography } from '@mui/material';
 import EditOutlinedIcon from '@mui/icons-material/EditOutlined';
 import DeleteOutlinedIcon from '@mui/icons-material/DeleteOutlined';
+import SyncOutlinedIcon from '@mui/icons-material/SyncOutlined';
 import { useSnackbar } from 'notistack';
 import { DataGrid } from '@mui/x-data-grid';
 
-
-function setTitle(title){
-  return (
-    <Box style={{width: "100%", display: "flex", justifyContent: "center", alignItems: "center"}}>
-      <Typography variant="h6">{title}</Typography>
-    </Box>
-  )
-}
 
 export default function Prod() {
 
   //snackbar
   const { enqueueSnackbar } = useSnackbar();
   const {stateProd: { dataProd }, dispatchProd } =  React.useContext(ProdContext);
-
+  const {stateCateg: { dataCateg }, dispatchCateg } =  React.useContext(CategContext);
   React.useEffect(() => {
+    dispatchCateg();
     dispatchProd();
   // eslint-disable-next-line react-hooks/exhaustive-deps
   },[]);
@@ -91,14 +86,21 @@ export default function Prod() {
       <Box sx={{width: '29%'}}>
         <Paper elevation={5}>
           <DataGrid
-              // rows={Categ}
+              rows={dataCateg}
               columns={categColumns}
               initialState={{ pagination: { paginationModel } }}
               pageSizeOptions={[5, 10, 20]}
               // checkboxSelection
               disableRowSelectionOnClick
               sx={{ border: 0, }}
-              slots={{ toolbar: title => setTitle('Категории')}}
+              slots={{ toolbar: title => {  return (
+                        <Box style={{width: "100%", display: "flex", justifyContent: "center", alignItems: "center"}}>
+                          <Typography variant="h6">Категории</Typography>
+                          <IconButton area-label = 'DeleteOutlinedIcon' color="primary" onClick={(e => dispatchCateg())}>
+                            <SyncOutlinedIcon />
+                          </IconButton>
+                        </Box>
+              )}}}
               columnVisibilityModel={{
                 id: false,
               }}
@@ -115,7 +117,14 @@ export default function Prod() {
               // checkboxSelection
               disableRowSelectionOnClick
               sx={{ border: 0, }}
-              slots={{ toolbar: title => setTitle('Продукция')}}
+              slots={{ toolbar: title => {  return (
+                        <Box style={{width: "100%", display: "flex", justifyContent: "center", alignItems: "center"}}>
+                          <Typography variant="h6">Продукция</Typography>
+                          <IconButton area-label = 'DeleteOutlinedIcon' color="primary" onClick={(e => dispatchProd())}>
+                            <SyncOutlinedIcon />
+                          </IconButton>
+                        </Box>
+              )}}}
               columnVisibilityModel={{
                 id: false,
               }}

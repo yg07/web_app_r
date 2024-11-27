@@ -1,12 +1,14 @@
 import * as React from 'react';
-import {BrowserRouter, Routes, Route } from "react-router-dom"; // (npm install react-router-dom)
-import Layout from './components/Layout';
+import {BrowserRouter, Routes, Route } from "react-router-dom";
 import Order from './components/Order'
 import Prod from './components/Prod';
 import Discovery from './components/Discovery';
 import NotFound from './components/NotFound';
-import { MenuContextProvider, ProdContextProvider} from "./context/GlobalState";
-import { SnackbarProvider } from 'notistack'; // (npm install notistack)
+import Layout from './components/Layout'
+import { MenuContextProvider } from './context/MenuContext'
+import { ProdContextProvider} from "./context/ProdContext";
+import { CategContextProvider} from "./context/CategContext";
+import { SnackbarProvider } from 'notistack';
 
 
 function App() {
@@ -15,7 +17,7 @@ function App() {
     <div style={{ maxWidth: "100%", margin: "0.5rem" }}>
       <MenuContextProvider>
         <ProdContextProvider>
-          {/* <CategContextProvider> */}
+          <CategContextProvider>
             <BrowserRouter future={{
                             v7_startTransition: true,
                             v7_relativeSplatPath: true,
@@ -29,7 +31,7 @@ function App() {
                   </Route>
               </Routes>
             </BrowserRouter>
-          {/* </CategContextProvider> */}
+          </CategContextProvider>
         </ProdContextProvider>
       </MenuContextProvider>
     </div>

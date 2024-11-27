@@ -1,5 +1,4 @@
-import React, { createContext, useReducer } from 'react';
-// import AppReducer from './AppReducer';
+import { createContext, useReducer } from 'react';
 
 const reducer = (state, { type, payload }) => {
   if (type === "loading") return { statusProd: "loading" };
@@ -8,20 +7,6 @@ const reducer = (state, { type, payload }) => {
   return state;
 };
 
-//menu
-export const MenuContext = createContext();
-
-export const MenuContextProvider = ({ children}) => {
-  const [menuItem, setMenuItem] = React.useState(0);
-  return (
-      <MenuContext.Provider value={{menuItem, setMenuItem}}>
-          {children}
-      </MenuContext.Provider>
-  );
-};
-
-
-//prod
 export const ProdContext = createContext();
 
 export const ProdContextProvider = ({ children }) => {
