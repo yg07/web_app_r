@@ -55,7 +55,6 @@ app.post("/prod", function (req, res) {
                 values('${req.body.name}',${req.body.price},${req.body.categ_id})`;
   connection.query(sql)
     .then(result => {
-      // console.log(result[0]);
       res.send({ statusText: `Data inserted: ${result[0].affectedRows} row(s).` })
     })
     .catch(err => {
@@ -69,7 +68,6 @@ app.post("/categ", function (req, res) {
   const sql = `insert into categ(name) values('${req.body.name}')`;
   connection.query(sql)
     .then(result => {
-      // console.log(result[0]);
       res.send({ statusText: `Data inserted: ${result[0].affectedRows} row(s).` })
     })
     .catch(err => {
@@ -89,7 +87,6 @@ app.put("/prod", function (req, res) {
                 where id = ${req.body.id}`;
   connection.query(sql)
     .then(result => {
-      // console.log(result[0]);
       res.send({ statusText: `Data updated: ${result[0].affectedRows} row(s).` })
     })
     .catch(err => {
@@ -102,11 +99,10 @@ app.put("/prod", function (req, res) {
 app.put("/categ", function (req, res) {
   if (!req.body) return res.sendStatus(400);
   const sql = `update categ 
-                set name = '${req.body.name}', 
+                set name = '${req.body.name}' 
                 where id = ${req.body.id}`;
   connection.query(sql)
     .then(result => {
-      // console.log(result[0]);
       res.send({ statusText: `Data updated: ${result[0].affectedRows} row(s).` })
     })
     .catch(err => {
@@ -122,7 +118,6 @@ app.delete("/prod", function (req, res) {
   const sql = `delete from prod where id = ${req.body.id}`;
   connection.query(sql)
     .then(result => {
-      // console.log(result[0]);
       res.send({ statusText: `Data deleted: ${result[0].affectedRows} row(s).` })
     })
     .catch(err => {
@@ -136,7 +131,6 @@ app.delete("/categ", function (req, res) {
   const sql = `delete from categ where id = ${req.body.id}`;
   connection.query(sql)
     .then(result => {
-      // console.log(result[0]);
       res.send({ statusText: `Data deleted: ${result[0].affectedRows} row(s).` })
     })
     .catch(err => {

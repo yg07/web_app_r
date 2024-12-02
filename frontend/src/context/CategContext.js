@@ -28,13 +28,85 @@ export const CategContextProvider = ({ children }) => {
     .catch((ex) => {
       console.log("Error: " + ex.statusText);
       dispatch({type: 'error', payload: ex.statusText});
-  });
+    });
   };
   
+  
+  const asyncAddCateg  = (nameCateg) => {
+    dispatch({ type: "loading" });
+    fetch("http://localhost:8000/categ",{
+      method: 'POST',
+      headers: { "Accept": "application/json", "Content-Type": "application/json" },
+      body: JSON.stringify({name: nameCateg })
+    })
+    .then(response =>  response.json())
+    .then(()=>{
+      return fetch("http://localhost:8000/categ")
+    })
+    .then(response =>  response.json())
+    .then( res => {
+      dispatch({ type: "finished", payload: res });
+    })
+    .catch((ex) => {
+      console.log("Error: " + ex.statusText);
+      dispatch({type: 'error', payload: ex.statusText});
+    });
+  };
+
+
+
+  const asyncDeleteCateg  = (idCateg) => {
+    dispatch({ type: "loading" });
+    fetch("http://localhost:8000/categ",{
+      method: 'DELETE',
+      headers: { "Accept": "application/json", "Content-Type": "application/json" },
+      body: JSON.stringify({ id: idCateg })
+    })
+    .then(response =>  response.json())
+    .then(()=>{
+      return fetch("http://localhost:8000/categ")
+    })
+    .then(response =>  response.json())
+    .then( res => {
+      dispatch({ type: "finished", payload: res });
+    })
+    .catch((ex) => {
+      console.log("Error: " + ex.statusText);
+      dispatch({type: 'error', payload: ex.statusText});
+    });
+  };
+
+
+
+  const asyncEditCateg  = (idCateg,nameCateg) => {
+    dispatch({ type: "loading" });
+    fetch("http://localhost:8000/categ",{
+      method: 'PUT',
+      headers: { "Accept": "application/json", "Content-Type": "application/json" },
+      body: JSON.stringify({ id: idCateg, name: nameCateg })
+    })
+    .then(response =>  response.json())
+    .then(()=>{
+      return fetch("http://localhost:8000/categ")
+    })
+    .then(response =>  response.json())
+    .then( res => {
+      dispatch({ type: "finished", payload: res });
+    })
+    .catch((ex) => {
+      console.log("Error: " + ex.statusText);
+      dispatch({type: 'error', payload: ex.statusText});
+    });
+  };
+
+
   return (
-    <CategContext.Provider value={{
+    <CategContext.Provider value={{ 
         stateCateg,
-        dispatchCateg: asyncDispatch
+        dispatchCateg: asyncDispatch,
+        dispatchAddCateg: asyncAddCateg,
+        dispatchDeleteCateg: asyncDeleteCateg,
+        dispatchEditCateg: asyncEditCateg
     }}>
       {children}
     </CategContext.Provider>
