@@ -53,6 +53,7 @@ app.post("/prod", function (req, res) {
   if (!req.body) return res.sendStatus(400);
   const sql = `insert into prod(name, price, categ_id) 
                 values('${req.body.name}',${req.body.price},${req.body.categ_id})`;
+  // console.log('insert prod: ' + sql);
   connection.query(sql)
     .then(result => {
       res.send({ statusText: `Data inserted: ${result[0].affectedRows} row(s).` })
@@ -66,6 +67,7 @@ app.post("/prod", function (req, res) {
 app.post("/categ", function (req, res) {
   if (!req.body) return res.sendStatus(400);
   const sql = `insert into categ(name) values('${req.body.name}')`;
+  // console.log('insert categ: ' + sql);
   connection.query(sql)
     .then(result => {
       res.send({ statusText: `Data inserted: ${result[0].affectedRows} row(s).` })
@@ -85,6 +87,7 @@ app.put("/prod", function (req, res) {
                     price = ${req.body.price}, 
                     categ_id = ${req.body.categ_id}
                 where id = ${req.body.id}`;
+  // console.log('update prod: ' + sql);
   connection.query(sql)
     .then(result => {
       res.send({ statusText: `Data updated: ${result[0].affectedRows} row(s).` })
@@ -101,6 +104,7 @@ app.put("/categ", function (req, res) {
   const sql = `update categ 
                 set name = '${req.body.name}' 
                 where id = ${req.body.id}`;
+  // console.log('update categ: ' + sql);
   connection.query(sql)
     .then(result => {
       res.send({ statusText: `Data updated: ${result[0].affectedRows} row(s).` })
@@ -116,6 +120,7 @@ app.put("/categ", function (req, res) {
 app.delete("/prod", function (req, res) {
   if (!req.body) return res.sendStatus(400);
   const sql = `delete from prod where id = ${req.body.id}`;
+  // console.log('delete prod: ' + sql);
   connection.query(sql)
     .then(result => {
       res.send({ statusText: `Data deleted: ${result[0].affectedRows} row(s).` })
@@ -129,6 +134,7 @@ app.delete("/prod", function (req, res) {
 app.delete("/categ", function (req, res) {
   if (!req.body) return res.sendStatus(400);
   const sql = `delete from categ where id = ${req.body.id}`;
+  // console.log('delete categ: ' + sql);
   connection.query(sql)
     .then(result => {
       res.send({ statusText: `Data deleted: ${result[0].affectedRows} row(s).` })

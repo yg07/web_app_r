@@ -103,7 +103,7 @@ export const CategContextProvider = ({ children }) => {
   return (
     <CategContext.Provider value={{ 
         stateCateg,
-        dispatchCateg: asyncDispatch,
+        dispatchGetCateg: asyncDispatch,
         dispatchAddCateg: asyncAddCateg,
         dispatchDeleteCateg: asyncDeleteCateg,
         dispatchEditCateg: asyncEditCateg
