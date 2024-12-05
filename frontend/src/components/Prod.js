@@ -1,5 +1,6 @@
 import * as React from 'react';
 import './Prod.css'
+import { MenuContext } from '../context/MenuContext';
 import { ProdContext } from '../context/ProdContext';
 import { CategContext } from "../context/CategContext";
 import { Box, 
@@ -13,23 +14,43 @@ import { Box,
          InputLabel, 
          MenuItem } from '@mui/material';
 import EditOutlinedIcon from '@mui/icons-material/EditOutlined';
+import AddOutlinedIcon from '@mui/icons-material/AddOutlined';
 import DeleteOutlinedIcon from '@mui/icons-material/DeleteOutlined';
 import SyncOutlinedIcon from '@mui/icons-material/SyncOutlined';
-// import { useSnackbar } from 'notistack';
+import { useSnackbar } from 'notistack';
 import { DataGrid,GridActionsCellItem } from '@mui/x-data-grid';
-
+// import Message from './Message';
 
 export default function Prod() {
 
 //snackbar
-// const { enqueueSnackbar } = useSnackbar();
-  const {stateProd: { dataProd }, dispatchGetProd, dispatchAddProd, dispatchDeleteProd, dispatchEditProd } =  React.useContext(ProdContext);
-  const {stateCateg: { dataCateg }, dispatchGetCateg, dispatchAddCateg, dispatchDeleteCateg, dispatchEditCateg } =  React.useContext(CategContext);
+  const { enqueueSnackbar, closeSnackbar } = useSnackbar();
+
+  const {setMenuItem} = React.useContext(MenuContext);
+  const {stateProd: { statusProd, dataProd, errorProd}, dispatchGetProd, dispatchAddProd, dispatchDeleteProd, dispatchEditProd } =  React.useContext(ProdContext);
+  const {stateCateg: { statusCateg, dataCateg, errorCateg }, dispatchGetCateg, dispatchAddCateg, dispatchDeleteCateg, dispatchEditCateg } =  React.useContext(CategContext);
+  
+  
   React.useEffect(() => {
+    setMenuItem(1);
     dispatchGetCateg();
     dispatchGetProd();
 // eslint-disable-next-line react-hooks/exhaustive-deps
   },[]);
+
+  React.useEffect(() => {
+    dispatchGetProd();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  },[dataCateg]);
+  
+  React.useEffect(() => {
+    // varisnt: success, error, warning, info, default
+    if(errorCateg || errorProd){
+      const key = enqueueSnackbar(errorCateg + ' ' + errorProd, { variant: 'error', SnackbarProps: { onClick: () => closeSnackbar(key) },});
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  },[errorCateg, errorProd]);
+
 
 //new-edit category
   const [editCategId, setEditCategId] = React.useState('');
@@ -44,7 +65,7 @@ export default function Prod() {
     if(!editCategId) {
       dispatchAddCateg(editCategName);
     }else{
-      dispatchEditCateg(editCategId,editCategName)
+      dispatchEditCateg(editCategId,editCategName);
       setEditCategId('');
     }
     setEditCategName('');
@@ -143,7 +164,7 @@ const prodDelete = (id) => {
               setEditProdId(params.row.id);
               setEditProdName(params.row.name);
               setEditProdPrice(params.row.price);
-              setEditProdCategId(getCategId(params.row.categ));
+              setEditProdCategId(dataCateg.reduce((categId,e) => {if(e.name === params.row.categ) return e.id; else return categId},''));
             })}
             color="primary"
           />,
@@ -158,9 +179,6 @@ const prodDelete = (id) => {
     }
   ];
 
-  const getCategId = (categName) => {
-    return Array.from(dataCateg).reduce((categId,e) => {if(e.name === categName) return e.id; else return categId},'')
-  }
 
   const paginationModel = { page: 0, pageSize: 10 };
 
@@ -181,6 +199,11 @@ const prodDelete = (id) => {
                           <IconButton area-label = 'DeleteOutlinedIcon' color="primary" onClick={(() => dispatchGetCateg())}>
                             <SyncOutlinedIcon />
                           </IconButton>
+                          <Typography
+                            variant='h6'
+                            color = {statusCateg === 'error'? 'red' : 'primary'}
+                            sx = {{ ml:1 }}
+                          >{ statusCateg }</Typography>
                         </Box>
               )}}}
               columnVisibilityModel={{
@@ -199,7 +222,7 @@ const prodDelete = (id) => {
                 label="Наименование категории" 
                 variant="outlined" 
               />
-              <Button onClick = { categAddEdit } variant="outlined">Добавить</Button>
+              <Button size="small" onClick = { categAddEdit } variant="outlined"><AddOutlinedIcon /><EditOutlinedIcon /></Button>
             </Box>
         </Paper>
       </Box>
@@ -218,6 +241,11 @@ const prodDelete = (id) => {
                           <IconButton area-label = 'DeleteOutlinedIcon' color="primary" onClick={(() => dispatchGetProd())}>
                             <SyncOutlinedIcon />
                           </IconButton>
+                          <Typography
+                            variant='h6'
+                            color = {statusProd === 'error'? 'red' : 'primary'}
+                            sx = {{ ml:1 }}
+                          >{ statusProd }</Typography>
                         </Box>
               )}}}
               columnVisibilityModel={{
@@ -262,7 +290,7 @@ const prodDelete = (id) => {
                 }
                 </Select>
               </FormControl>
-              <Button onClick={ prodAddEdit } variant="outlined">Добавить</Button>
+              <Button size="small" onClick={ prodAddEdit } variant="outlined"><AddOutlinedIcon /><EditOutlinedIcon /></Button>
           </Box>
         </Paper>
       </Box>

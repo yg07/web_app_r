@@ -1,9 +1,9 @@
 import { createContext, useReducer } from 'react';
 
 const reducer = (state, { type, payload }) => {
-  if (type === "loading") return { statusCateg: "loading" };
-  if (type === "finished") return { statusCateg: "finished", dataCateg: payload };
-  if (type === "error") return { statusCateg: "idle", errorCateg: payload };
+  if (type === "loading") return { ...state, statusCateg: "loading", errorCateg: undefined };
+  if (type === "finished") return { statusCateg: "finished", dataCateg: payload, errorCateg: undefined };
+  if (type === "error") return { ...state, statusCateg: "error", errorCateg: payload };
   return state;
 };
 
@@ -18,34 +18,46 @@ export const CategContextProvider = ({ children }) => {
   }
   const [stateCateg, dispatch] = useReducer(reducer, initialState);
 
-  const asyncDispatch  = () => {
+
+//get category  
+  const asyncGetCateg  = () => {
     dispatch({ type: "loading" });
     fetch("http://localhost:8000/categ")
     .then(response =>  response.json())
-    .then( res => {
-      dispatch({ type: "finished", payload: res });
+    .then(response => {
+      dispatch({ type: "finished", payload: response });
     })
     .catch((ex) => {
-      console.log("Error: " + ex.statusText);
-      dispatch({type: 'error', payload: ex.statusText});
+      console.log( "Error: " + ex.statusText );
+      dispatch({ type: 'error', payload: ex.statusText });
     });
   };
   
-  
+
+//add category    
   const asyncAddCateg  = (nameCateg) => {
     dispatch({ type: "loading" });
-    fetch("http://localhost:8000/categ",{
+    const promise = fetch("http://localhost:8000/categ",{
       method: 'POST',
       headers: { "Accept": "application/json", "Content-Type": "application/json" },
       body: JSON.stringify({name: nameCateg })
     })
-    .then(response =>  response.json())
-    .then(()=>{
-      return fetch("http://localhost:8000/categ")
+    .then(response =>  response.json());
+    
+    
+    promise.then((response)=>{
+      if(response.status !== 200){
+        console.log(response.message);
+        dispatch({type: 'error', payload:response.message});
+      }
+    });
+
+    promise.then(() => {
+      return fetch("http://localhost:8000/categ");
     })
     .then(response =>  response.json())
-    .then( res => {
-      dispatch({ type: "finished", payload: res });
+    .then(response => {
+      dispatch({type: "finished", payload: response});
     })
     .catch((ex) => {
       console.log("Error: " + ex.statusText);
@@ -54,21 +66,29 @@ export const CategContextProvider = ({ children }) => {
   };
 
 
-
+//del category  
   const asyncDeleteCateg  = (idCateg) => {
     dispatch({ type: "loading" });
-    fetch("http://localhost:8000/categ",{
+    const promise = fetch("http://localhost:8000/categ",{
       method: 'DELETE',
       headers: { "Accept": "application/json", "Content-Type": "application/json" },
       body: JSON.stringify({ id: idCateg })
     })
-    .then(response =>  response.json())
-    .then(()=>{
-      return fetch("http://localhost:8000/categ")
+    .then(response =>  response.json());
+
+    promise.then((response)=>{
+      if(response.status !== 200){
+        console.log(response.message);
+        dispatch({type: 'error', payload:response.message});
+      }
+    });
+
+    promise.then(() => {
+      return fetch("http://localhost:8000/categ");
     })
     .then(response =>  response.json())
-    .then( res => {
-      dispatch({ type: "finished", payload: res });
+    .then(response => {
+      dispatch({type: "finished", payload: response});
     })
     .catch((ex) => {
       console.log("Error: " + ex.statusText);
@@ -77,21 +97,29 @@ export const CategContextProvider = ({ children }) => {
   };
 
 
-
+//edit category  
   const asyncEditCateg  = (idCateg,nameCateg) => {
     dispatch({ type: "loading" });
-    fetch("http://localhost:8000/categ",{
+    const promise = fetch("http://localhost:8000/categ",{
       method: 'PUT',
       headers: { "Accept": "application/json", "Content-Type": "application/json" },
       body: JSON.stringify({ id: idCateg, name: nameCateg })
     })
-    .then(response =>  response.json())
-    .then(()=>{
-      return fetch("http://localhost:8000/categ")
+    .then(response =>  response.json());
+
+    promise.then((response)=>{
+      if(response.status !== 200){
+        console.log(response.message);
+        dispatch({type: 'error', payload:response.message});
+      }
+    });
+
+    promise.then(() => {
+      return fetch("http://localhost:8000/categ");
     })
     .then(response =>  response.json())
-    .then( res => {
-      dispatch({ type: "finished", payload: res });
+    .then(response => {
+      dispatch({type: "finished", payload: response});
     })
     .catch((ex) => {
       console.log("Error: " + ex.statusText);
@@ -103,7 +131,7 @@ export const CategContextProvider = ({ children }) => {
   return (
     <CategContext.Provider value={{ 
         stateCateg,
-        dispatchGetCateg: asyncDispatch,
+        dispatchGetCateg: asyncGetCateg,
         dispatchAddCateg: asyncAddCateg,
         dispatchDeleteCateg: asyncDeleteCateg,
         dispatchEditCateg: asyncEditCateg

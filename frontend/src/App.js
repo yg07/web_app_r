@@ -40,7 +40,7 @@ function App() {
 
 export default function AppWithSnackbar()  {
   return (
-    <SnackbarProvider maxSnack={10} autoHideDuration={3000} anchorOrigin={{horizontal: 'right', vertical: 'top'}}>
+    <SnackbarProvider maxSnack={10} autoHideDuration={10000} anchorOrigin={{horizontal: 'right', vertical: 'top'}}>
         <App />
     </SnackbarProvider>
   );
