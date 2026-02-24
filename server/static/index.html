@@ -15,6 +15,21 @@
         <button onclick="ins_upd_prod()" title="Insert if empty id, else Update">Insert-Update</button>
     </div>
     <div id="prod_div"></div>
+    <h2>Categ <button onclick="get_categ()">Get</button></h2>
+    <div style="display: inline-block;">
+        <input id="categ_id" disabled size="3" title="id">
+        <input type="text" id="categ_name" title="Category name">
+        <button onclick="ins_upd_categ()" title="Insert if empty id, else Update">Insert-Update</button>
+    </div>
+    <div id="categ_div"></div>
+    <h2>Predpr <button onclick="get_predpr()">Get</button></h2>
+    <div style="display: inline-block;">
+        <input id="predpr_id" disabled size="3" title="id">
+        <input type="text" id="predpr_name" title="Predpr name">
+        <input type="text" id="predpr_address" title="Predpr address">
+        <button onclick="ins_upd_predpr()" title="Insert if empty id, else Update">Insert-Update</button>
+    </div>
+    <div id="predpr_div"></div>
 <script>
 
 function ins_upd_prod(){
@@ -150,6 +165,259 @@ function del_data(){
             alert("Error: " + ex.statusText);
         })
 }
+// ------------------------Categ---------------------------
+function get_categ(){
+    document.getElementById("categ_div").innerHTML='';
+    fetch("categ",{
+        method: "GET",
+        headers: { "Accept": "application/json" }
+    })
+    .then(response =>  response.json())
+    .then((response) => {
+        if(response.status == 500){
+            return Promise.reject({statusText: response.message});
+        }
+        let t = document.createElement('table');
+        t.append(document.createElement('tr'));
+        for(const text of ['#','Наименование','']){
+            t.firstChild.append(Object.assign(document.createElement('th'), {innerHTML: text}));
+        }
+        for(const row of response){
+            let tr = document.createElement('tr');
+            for(const key in row){
+                tr.append(Object.assign(document.createElement('td'), {innerHTML: row[key]}))
+            }
+            let td = document.createElement('td');
+            btn_upd = document.createElement('button');
+            btn_upd.innerHTML = 'Upd';
+            btn_upd.addEventListener("click",move_categ_data_for_update);
+            btn_del = document.createElement('button');
+            btn_del.innerHTML = 'Del';
+            btn_del.addEventListener("click",del_categ_data);
+            td.append(btn_upd);
+            td.append(btn_del);
+            tr.append(td);
+            t.append(tr);
+        }  
+        document.getElementById("categ_div").append(t);
+    })
+    .catch((ex) => {
+        console.log("Error: " + ex.statusText);
+        alert("Error: " + ex.statusText);
+    })
+}
+
+function move_categ_data_for_update(){
+    console.log(this);
+    document.getElementById("categ_id").value = this.parentElement.parentElement.cells[0].innerHTML;
+    document.getElementById("categ_name").value = this.parentElement.parentElement.cells[1].innerHTML;
+}
+
+
+function del_categ_data(){
+    fetch("categ",{
+            method: "DELETE",
+            headers: { "Accept": "application/json", "Content-Type": "application/json" },
+            body: JSON.stringify({
+                id: this.parentElement.parentElement.cells[0].innerHTML
+            })
+        })
+        .then((response) =>  response.json())
+        .then((response) => {
+            if(response.status == 500){
+            return Promise.reject({statusText: response.message});
+            }
+            get_categ();
+            alert(response.statusText);
+        })
+        .catch((ex) => {
+            console.log("Error: " + ex.statusText);
+            alert("Error: " + ex.statusText);
+        })
+}
+function ins_upd_categ(){
+    let categ_id = document.getElementById("categ_id");
+    let categ_name = document.getElementById("categ_name");
+    if(categ_id.value == ''){
+        fetch("categ",{
+            method: "POST",
+            headers: { "Accept": "application/json", "Content-Type": "application/json" },
+            body: JSON.stringify({
+                name: categ_name.value,
+            })
+        })
+        .then(response =>  response.json())
+        .then((response) => {
+            if(response.status == 500){
+                return Promise.reject({statusText: response.message});
+            }
+            get_categ();
+            categ_id.value = '';
+            categ_name.value = '';
+            alert(response.statusText);
+        })
+        .catch((ex) => {
+            console.log("Error: " + ex.statusText);
+            alert("Error: " + ex.statusText);
+        })
+    } else {
+        fetch("categ",{
+            method: "PUT",
+            headers: { "Accept": "application/json", "Content-Type": "application/json" },
+            body: JSON.stringify({
+                id: parseInt(categ_id.value),
+                name: categ_name.value,
+
+            })
+        })
+        .then((response) =>  response.json())
+        .then((response) => {
+            if(response.status == 500){
+            return Promise.reject({statusText: response.message});
+            }
+            get_categ();
+            categ_id.value = '';
+            categ_name.value = '';
+            alert(response.statusText);
+        })
+        .catch((ex) => {
+            console.log("Error: " + ex.statusText);
+            alert("Error: " + ex.statusText);
+        })
+    }
+}
+
+// ------------------------Predpr---------------------------
+function get_predpr(){
+    document.getElementById("predpr_div").innerHTML='';
+    fetch("predpr",{
+        method: "GET",
+        headers: { "Accept": "application/json" }
+    })
+    .then(response =>  response.json())
+    .then((response) => {
+        if(response.status == 500){
+            return Promise.reject({statusText: response.message});
+        }
+        let t = document.createElement('table');
+        t.append(document.createElement('tr'));
+        for(const text of ['#','Наименование','Адрес','']){
+            t.firstChild.append(Object.assign(document.createElement('th'), {innerHTML: text}));
+        }
+        for(const row of response){
+            let tr = document.createElement('tr');
+            for(const key in row){
+                tr.append(Object.assign(document.createElement('td'), {innerHTML: row[key]}))
+            }
+            let td = document.createElement('td');
+            btn_upd = document.createElement('button');
+            btn_upd.innerHTML = 'Upd';
+            btn_upd.addEventListener("click",move_predpr_data_for_update);
+            btn_del = document.createElement('button');
+            btn_del.innerHTML = 'Del';
+            btn_del.addEventListener("click",del_predpr_data);
+            td.append(btn_upd);
+            td.append(btn_del);
+            tr.append(td);
+            t.append(tr);
+        }  
+        document.getElementById("predpr_div").append(t);
+    })
+    .catch((ex) => {
+        console.log("Error: " + ex.statusText);
+        alert("Error: " + ex.statusText);
+    })
+}
+
+function move_predpr_data_for_update(){
+    console.log(this);
+    document.getElementById("predpr_id").value = this.parentElement.parentElement.cells[0].innerHTML;
+    document.getElementById("predpr_name").value = this.parentElement.parentElement.cells[1].innerHTML;
+    document.getElementById("predpr_address").value = this.parentElement.parentElement.cells[2].innerHTML;
+}
+
+
+function del_predpr_data(){
+    fetch("predpr",{
+            method: "DELETE",
+            headers: { "Accept": "application/json", "Content-Type": "application/json" },
+            body: JSON.stringify({
+                id: this.parentElement.parentElement.cells[0].innerHTML
+            })
+        })
+        .then((response) =>  response.json())
+        .then((response) => {
+            if(response.status == 500){
+            return Promise.reject({statusText: response.message});
+            }
+            get_predpr();
+            alert(response.statusText);
+        })
+        .catch((ex) => {
+            console.log("Error: " + ex.statusText);
+            alert("Error: " + ex.statusText);
+        })
+}
+function ins_upd_predpr(){
+    let predpr_id = document.getElementById("predpr_id");
+    let predpr_name = document.getElementById("predpr_name");
+    let predpr_address = document.getElementById("predpr_address");
+    if(predpr_id.value == ''){
+        fetch("predpr",{
+            method: "POST",
+            headers: { "Accept": "application/json", "Content-Type": "application/json" },
+            body: JSON.stringify({
+                name: predpr_name.value,
+                address: predpr_address.value,
+            })
+        })
+        .then(response =>  response.json())
+        .then((response) => {
+            if(response.status == 500){
+                return Promise.reject({statusText: response.message});
+            }
+            get_predpr();
+            predpr_id.value = '';
+            predpr_name.value = '';
+            predpr_address.value = '';
+            alert(response.statusText);
+        })
+        .catch((ex) => {
+            console.log("Error: " + ex.statusText);
+            alert("Error: " + ex.statusText);
+        })
+    } else {
+        fetch("predpr",{
+            method: "PUT",
+            headers: { "Accept": "application/json", "Content-Type": "application/json" },
+            body: JSON.stringify({
+                id: parseInt(predpr_id.value),
+                name: predpr_name.value,
+                address: predpr_address.value
+            })
+        })
+        .then((response) =>  response.json())
+        .then((response) => {
+            if(response.status == 500){
+            return Promise.reject({statusText: response.message});
+            }
+            get_predpr();
+            predpr_id.value = '';
+            predpr_name.value = '';
+            predpr_address.value = '';
+            alert(response.statusText);
+        })
+        .catch((ex) => {
+            console.log("Error: " + ex.statusText);
+            alert("Error: " + ex.statusText);
+        })
+    }
+}
+
+
+
+
+
 
 </script>
 </body>
