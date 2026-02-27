@@ -28,8 +28,8 @@ export const CategContextProvider = ({ children }) => {
       dispatch({ type: "finished", payload: response });
     })
     .catch((ex) => {
-      console.log( "Error: " + ex.statusText );
-      dispatch({ type: 'error', payload: ex.statusText });
+      console.log( "Error: " + ex.message );
+      dispatch({ type: 'error', payload: ex.message });
     });
   };
   
@@ -60,8 +60,8 @@ export const CategContextProvider = ({ children }) => {
       dispatch({type: "finished", payload: response});
     })
     .catch((ex) => {
-      console.log("Error: " + ex.statusText);
-      dispatch({type: 'error', payload: ex.statusText});
+      console.log("Error: " + ex.message);
+      dispatch({type: 'error', payload: ex.message});
     });
   };
 
@@ -91,8 +91,8 @@ export const CategContextProvider = ({ children }) => {
       dispatch({type: "finished", payload: response});
     })
     .catch((ex) => {
-      console.log("Error: " + ex.statusText);
-      dispatch({type: 'error', payload: ex.statusText});
+      console.log("Error: " + ex.message);
+      dispatch({type: 'error', payload: ex.message});
     });
   };
 
@@ -122,8 +122,8 @@ export const CategContextProvider = ({ children }) => {
       dispatch({type: "finished", payload: response});
     })
     .catch((ex) => {
-      console.log("Error: " + ex.statusText);
-      dispatch({type: 'error', payload: ex.statusText});
+      console.log("Error: " + ex.message);
+      dispatch({type: 'error', payload: ex.message});
     });
   };
 
