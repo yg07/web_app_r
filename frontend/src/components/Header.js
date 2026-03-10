@@ -47,6 +47,7 @@ export default function Header() {
           <Tab label="Orders" to="/order" component={Link} />
           <Tab label="Products" to="/prod" component={Link} />
           <Tab label="Partners" to="/predpr" component={Link} />
+          <Tab label="Sklad" to="/sklad" component={Link} />
           <Tab label="Discovery" to="/discovery" component={Link} />
         </Tabs>
       </Paper>

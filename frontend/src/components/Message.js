@@ -2,11 +2,11 @@ import * as React from 'react';
 import { useSnackbar } from 'notistack';
 
 export default function Message(props) {
-    const { enqueueSnackbar } = useSnackbar();
+    const { enqueueSnackbar, closeSnackbar } = useSnackbar();
 
     React.useEffect(() => {
       // varisnt: success, error, warning, info, default
-      enqueueSnackbar(props.text, { variant: props.variant, preventDuplicate: true, });
+      const key = enqueueSnackbar(props.text, { variant: props.variant, SnackbarProps: { onClick: () => closeSnackbar(key) },});
       // eslint-disable-next-line react-hooks/exhaustive-deps
     },[]);
 }
