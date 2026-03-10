@@ -192,7 +192,7 @@ DELIMITER ;;
 /*!50003 CREATE*/ /*!50017 DEFINER=`root`@`localhost`*/ /*!50003 TRIGGER `spec_BEFORE_INSERT` BEFORE INSERT ON `spec` FOR EACH ROW BEGIN
 declare count int;
 set count = (select kol from sklad where prod_id = NEW.prod_id);
-if count - NEW.kol > 0
+if count - NEW.kol >= 0
 then
 	update sklad
 	set kol = count - NEW.kol
@@ -224,7 +224,7 @@ then SIGNAL sqlstate '45001'
 end if;
 
 set count = (select kol from sklad where prod_id = OLD.prod_id);
-if count - (NEW.kol - OLD.kol) > 0
+if count - (NEW.kol - OLD.kol) >= 0
 then
 	update sklad
 	set kol = count - (NEW.kol - OLD.kol)

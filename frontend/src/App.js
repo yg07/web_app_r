@@ -2,12 +2,14 @@ import * as React from 'react';
 import {BrowserRouter, Routes, Route } from "react-router-dom";
 import Order from './components/Order'
 import Prod from './components/Prod';
+import Predpr from './components/Predpr';
 import Discovery from './components/Discovery';
 import NotFound from './components/NotFound';
 import Layout from './components/Layout'
 import { MenuContextProvider } from './context/MenuContext'
-import { ProdContextProvider} from "./context/ProdContext";
-import { CategContextProvider} from "./context/CategContext";
+import { ProdContextProvider } from "./context/ProdContext";
+import { CategContextProvider } from "./context/CategContext";
+import { PredprContextProvider } from './context/PredprContext';
 import { SnackbarProvider } from 'notistack';
 
 
@@ -18,19 +20,22 @@ function App() {
       <MenuContextProvider>
         <ProdContextProvider>
           <CategContextProvider>
-            <BrowserRouter future={{
-                            v7_startTransition: true,
-                            v7_relativeSplatPath: true,
-                            }}>
-              <Routes>
-                  <Route path="/" element={<Layout />}>
-                    <Route path="/order" element={<Order />} />
-                    <Route path="/prod" element={<Prod />} />
-                    <Route path="discovery" element={<Discovery />} />
-                    <Route path="*" element={<NotFound />} />
-                  </Route>
-              </Routes>
-            </BrowserRouter>
+            <PredprContextProvider>
+              <BrowserRouter future={{
+                              v7_startTransition: true,
+                              v7_relativeSplatPath: true,
+                              }}>
+                <Routes>
+                    <Route path="/" element={<Layout />}>
+                      <Route path="/order" element={<Order />} />
+                      <Route path="/prod" element={<Prod />} />
+                      <Route path="/predpr" element={<Predpr />} />
+                      <Route path="discovery" element={<Discovery />} />
+                      <Route path="*" element={<NotFound />} />
+                    </Route>
+                </Routes>
+              </BrowserRouter>
+            </PredprContextProvider>
           </CategContextProvider>
         </ProdContextProvider>
       </MenuContextProvider>

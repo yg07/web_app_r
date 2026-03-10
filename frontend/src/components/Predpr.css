@@ -1,0 +1,7 @@
+.MuiDataGrid-root .MuiDataGrid-cell:focus-within {
+    outline: none !important;
+}
+
+.MuiDataGrid-row:hover  {
+    background-color: #e7eef7 !important;
+}
