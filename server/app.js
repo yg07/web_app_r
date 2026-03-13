@@ -1,213 +1,29 @@
 const express = require("express");
-const mysql = require("mysql2/promise");
 const cors = require("cors");
+const { initDatabase } = require("./config/database");
 
-mysql.createConnection({
-  host: "localhost",
-  user: "root",
-  database: "web_app",
-  password: "root"
-})
-.then(res => connection = res)
-.catch(err => {
-  console.log(err.message);
-  process.exit(1);
-});
-
+// Import routes
+const prodRoutes = require("./routes/prodRoutes");
+const categRoutes = require("./routes/categRoutes");
+const predprRoutes = require("./routes/predprRoutes");
+const skladRoutes = require("./routes/skladRoutes");
 
 const app = express();
+
+// Middleware
 app.use(cors({
   origin: ["http://localhost:3000"],
 }));
 app.use(express.json());
 app.use(express.static("static"));
 
+// Initialize database connection
+initDatabase();
 
-//get prod
-app.get("/prod", function (_, res) {
-  connection.query(`SELECT p.id, p.name, p.price, c.name as categ FROM prod p left join categ c on p.categ_id = c.id`)
-    .then(([rows, fields]) => {
-      // console.log("GET prod...");
-      res.send(rows);
-    })
-    .catch(err => {
-      console.log(err.sqlMessage);
-      res.status(500).send({ status: 500, data: null, message: err.sqlMessage });
-    })
-});
+// Routes
+app.use("/", prodRoutes);
+app.use("/", categRoutes);
+app.use("/", predprRoutes);
+app.use("/", skladRoutes);
 
-//insert prod
-app.post("/prod", function (req, res) {
-  if (!req.body) return res.sendStatus(400);
-  const sql = `insert into prod(name, price, categ_id) 
-                values('${req.body.name}',${req.body.price},${req.body.categ_id})`;
-  // console.log('insert prod: ' + sql);
-  connection.query(sql)
-    .then(result => {
-      res.send({ statusText: `Data inserted: ${result[0].affectedRows} row(s).` })
-    })
-    .catch(err => {
-      console.log('Error: ' + err.sqlMessage);
-      res.status(500).send({ status: 500, data: null, message: err.sqlMessage });
-    })
-});
-
-//update prod
-app.put("/prod", function (req, res) {
-  if (!req.body) return res.sendStatus(400);
-  const sql = `update prod 
-                set name = '${req.body.name}', 
-                    price = ${req.body.price}, 
-                    categ_id = ${req.body.categ_id}
-                where id = ${req.body.id}`;
-  // console.log('update prod: ' + sql);
-  connection.query(sql)
-    .then(result => {
-      res.send({ statusText: `Data updated: ${result[0].affectedRows} row(s).` })
-    })
-    .catch(err => {
-      console.log('Error: ' + err.sqlMessage);
-      res.status(500).send({ status: 500, data: null, message: err.sqlMessage });
-    })
-});
-
-//delete prod
-app.delete("/prod", function (req, res) {
-  if (!req.body) return res.sendStatus(400);
-  const sql = `delete from prod where id = ${req.body.id}`;
-  // console.log('delete prod: ' + sql);
-  connection.query(sql)
-    .then(result => {
-      res.send({ statusText: `Data deleted: ${result[0].affectedRows} row(s).` })
-    })
-    .catch(err => {
-      console.log('Error: ' + err.sqlMessage);
-      res.status(500).send({ status: 500, data: null, message: err.sqlMessage });
-    })
-});
-
-
-//get categ
-app.get("/categ", function (_, res) {
-  connection.query(`SELECT id, name FROM categ`)
-    .then(([rows, fields]) => {
-      res.send(rows);
-    })
-    .catch(err => {
-      console.log(err.sqlMessage);
-      res.status(500).send({ status: 500, data: null, message: err.sqlMessage });
-    })
-});
-
-//insert categ
-app.post("/categ", function (req, res) {
-  if (!req.body) return res.sendStatus(400);
-  const sql = `insert into categ(name) values('${req.body.name}')`;
-  // console.log('insert categ: ' + sql);
-  connection.query(sql)
-    .then(result => {
-      res.send({ statusText: `Data inserted: ${result[0].affectedRows} row(s).` })
-    })
-    .catch(err => {
-      console.log('Error: ' + err.sqlMessage);
-      res.status(500).send({ status: 500, data: null, message: err.sqlMessage });
-    })
-});
-
-//update categ
-app.put("/categ", function (req, res) {
-  if (!req.body) return res.sendStatus(400);
-  const sql = `update categ 
-                set name = '${req.body.name}' 
-                where id = ${req.body.id}`;
-  // console.log('update categ: ' + sql);
-  connection.query(sql)
-    .then(result => {
-      res.send({ statusText: `Data updated: ${result[0].affectedRows} row(s).` })
-    })
-    .catch(err => {
-      console.log('Error: ' + err.sqlMessage);
-      res.status(500).send({ status: 500, data: null, message: err.sqlMessage });
-    })
-});
-
-//delete categ
-app.delete("/categ", function (req, res) {
-  if (!req.body) return res.sendStatus(400);
-  const sql = `delete from categ where id = ${req.body.id}`;
-  // console.log('delete categ: ' + sql);
-  connection.query(sql)
-    .then(result => {
-      res.send({ statusText: `Data deleted: ${result[0].affectedRows} row(s).` })
-    })
-    .catch(err => {
-      console.log('Error: ' + err.sqlMessage);
-      res.status(500).send({ status: 500, data: null, message: err.sqlMessage });
-    })
-});
-
-
-
-//get predpr
-app.get("/predpr", function (_, res) {
-  connection.query(`SELECT id, name, address FROM predpr`)
-    .then(([rows, fields]) => {
-      res.send(rows);
-    })
-    .catch(err => {
-      console.log(err.sqlMessage);
-      res.status(500).send({ status: 500, data: null, message: err.sqlMessage });
-    })
-});
-
-//insert predpr
-app.post("/predpr", function (req, res) {
-  if (!req.body) return res.sendStatus(400);
-  const sql = `insert into predpr(name, address) values('${req.body.name}', '${req.body.address}')`;
-  // console.log('insert predpr: ' + sql);
-  connection.query(sql)
-    .then(result => {
-      res.send({ statusText: `Data inserted: ${result[0].affectedRows} row(s).` })
-    })
-    .catch(err => {
-      console.log('Error: ' + err.sqlMessage);
-      res.status(500).send({ status: 500, data: null, message: err.sqlMessage });
-    })
-});
-
-//update predpr
-app.put("/predpr", function (req, res) {
-  if (!req.body) return res.sendStatus(400);
-  const sql = `update predpr 
-                set 
-                name = '${req.body.name}',
-                address =  '${req.body.address}'
-                where id = ${req.body.id}`;
-  // console.log('update categ: ' + sql);
-  connection.query(sql)
-    .then(result => {
-      res.send({ statusText: `Data updated: ${result[0].affectedRows} row(s).` })
-    })
-    .catch(err => {
-      console.log('Error: ' + err.sqlMessage);
-      res.status(500).send({ status: 500, data: null, message: err.sqlMessage });
-    })
-});
-
-//delete predpr
-app.delete("/predpr", function (req, res) {
-  if (!req.body) return res.sendStatus(400);
-  const sql = `delete from predpr where id = ${req.body.id}`;
-  // console.log('delete predpr: ' + sql);
-  connection.query(sql)
-    .then(result => {
-      res.send({ statusText: `Data deleted: ${result[0].affectedRows} row(s).` })
-    })
-    .catch(err => {
-      console.log('Error: ' + err.sqlMessage);
-      res.status(500).send({ status: 500, data: null, message: err.sqlMessage });
-    })
-});
-
-
-app.listen(8000);
+module.exports = app;

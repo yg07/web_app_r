@@ -30,6 +30,14 @@
         <button onclick="ins_upd_predpr()" title="Insert if empty id, else Update">Insert-Update</button>
     </div>
     <div id="predpr_div"></div>
+    <h2>Sklad <button onclick="get_sklad()">Get</button></h2>
+    <div style="display: inline-block;">
+        <input id="sklad_id" disabled size="3" title="id">
+        <input type="number" id="sklad_prod_id" title="Product ID">
+        <input type="number" id="sklad_kol" title="Product KOL">
+        <button onclick="ins_upd_sklad()" title="Insert if empty id, else Update">Insert-Update</button>
+    </div>
+    <div id="sklad_div"></div>
 <script>
 
 function ins_upd_prod(){
@@ -140,7 +148,7 @@ function move_data_for_update(){
     document.getElementById("prod_id").value = this.parentElement.parentElement.cells[0].innerHTML;
     document.getElementById("prod_name").value = this.parentElement.parentElement.cells[1].innerHTML;
     document.getElementById("prod_price").value = this.parentElement.parentElement.cells[2].innerHTML;
-    document.getElementById("prod_categ_id").value = this.parentElement.parentElement.cells[3].innerHTML;
+    document.getElementById("prod_categ_id").value = 0;
 }
 
 
@@ -415,6 +423,133 @@ function ins_upd_predpr(){
 }
 
 
+// ------------------------SKLAD---------------------------
+function get_sklad(){
+    document.getElementById("sklad_div").innerHTML='';
+    fetch("sklad",{
+        method: "GET",
+        headers: { "Accept": "application/json" }
+    })
+    .then(response =>  response.json())
+    .then((response) => {
+        if(response.status == 500){
+            return Promise.reject({statusText: response.message});
+        }
+        let t = document.createElement('table');
+        t.append(document.createElement('tr'));
+        for(const text of ['#','Продукция','Количество','']){
+            t.firstChild.append(Object.assign(document.createElement('th'), {innerHTML: text}));
+        }
+        for(const row of response){
+            let tr = document.createElement('tr');
+            for(const key in row){
+                tr.append(Object.assign(document.createElement('td'), {innerHTML: row[key]}))
+            }
+            let td = document.createElement('td');
+            btn_upd = document.createElement('button');
+            btn_upd.innerHTML = 'Upd';
+            btn_upd.addEventListener("click",move_sklad_data_for_update);
+            btn_del = document.createElement('button');
+            btn_del.innerHTML = 'Del';
+            btn_del.addEventListener("click",del_sklad_data);
+            td.append(btn_upd);
+            td.append(btn_del);
+            tr.append(td);
+            t.append(tr);
+        }  
+        document.getElementById("sklad_div").append(t);
+    })
+    .catch((ex) => {
+        console.log("Error: " + ex.statusText);
+        alert("Error: " + ex.statusText);
+    })
+}
+
+function move_sklad_data_for_update(){
+    console.log(this);
+    document.getElementById("sklad_id").value = this.parentElement.parentElement.cells[0].innerHTML;
+    document.getElementById("sklad_prod_id").value = 0;
+    document.getElementById("sklad_kol").value = this.parentElement.parentElement.cells[2].innerHTML;
+
+}
+
+
+function del_sklad_data(){
+    fetch("sklad",{
+            method: "DELETE",
+            headers: { "Accept": "application/json", "Content-Type": "application/json" },
+            body: JSON.stringify({
+                id: this.parentElement.parentElement.cells[0].innerHTML
+            })
+        })
+        .then((response) =>  response.json())
+        .then((response) => {
+            if(response.status == 500){
+            return Promise.reject({statusText: response.message});
+            }
+            get_sklad();
+            alert(response.statusText);
+        })
+        .catch((ex) => {
+            console.log("Error: " + ex.statusText);
+            alert("Error: " + ex.statusText);
+        })
+}
+function ins_upd_sklad(){
+    let sklad_id = document.getElementById("sklad_id");
+    let sklad_name = document.getElementById("sklad_prod_id");
+    let sklad_kol = document.getElementById("sklad_kol");
+    if(sklad_id.value == ''){
+        fetch("sklad",{
+            method: "POST",
+            headers: { "Accept": "application/json", "Content-Type": "application/json" },
+            body: JSON.stringify({
+                prod_id: sklad_prod_id.value,
+                kol: sklad_kol.value
+            })
+        })
+        .then(response =>  response.json())
+        .then((response) => {
+            if(response.status == 500){
+                return Promise.reject({statusText: response.message});
+            }
+            get_sklad();
+            sklad_id.value = '';
+            sklad_prod_id.value = 0;
+            sklad_kol = 0;
+            alert(response.statusText);
+        })
+        .catch((ex) => {
+            console.log("Error: " + ex.statusText);
+            alert("Error: " + ex.statusText);
+        })
+    } else {
+        fetch("sklad",{
+            method: "PUT",
+            headers: { "Accept": "application/json", "Content-Type": "application/json" },
+            body: JSON.stringify({
+                id: parseInt(sklad_id.value),
+                prod_id: sklad_prod_id.value,
+                kol: sklad_kol.value
+            })
+        })
+        .then((response) =>  response.json())
+        .then((response) => {
+            if(response.status == 500){
+            return Promise.reject({statusText: response.message});
+            }
+            get_sklad();
+            sklad_id.value = '';
+            sklad_prod_id.value = 0;
+            sklad_kol.value = 0
+            alert(response.statusText);
+        })
+        .catch((ex) => {
+            console.log("Error: " + ex.statusText);
+            alert("Error: " + ex.statusText);
+        })
+    }
+}
 
 
 
