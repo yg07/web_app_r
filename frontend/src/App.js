@@ -3,6 +3,7 @@ import {BrowserRouter, Routes, Route } from "react-router-dom";
 import Order from './components/Order'
 import Prod from './components/Prod';
 import Predpr from './components/Predpr';
+import Sklad from './components/Sklad'
 import Discovery from './components/Discovery';
 import NotFound from './components/NotFound';
 import Layout from './components/Layout'
@@ -10,6 +11,7 @@ import { MenuContextProvider } from './context/MenuContext'
 import { ProdContextProvider } from "./context/ProdContext";
 import { CategContextProvider } from "./context/CategContext";
 import { PredprContextProvider } from './context/PredprContext';
+import { SkladContextProvider } from './context/SkladContext';
 import { SnackbarProvider } from 'notistack';
 
 
@@ -21,20 +23,23 @@ function App() {
         <ProdContextProvider>
           <CategContextProvider>
             <PredprContextProvider>
-              <BrowserRouter future={{
-                              v7_startTransition: true,
-                              v7_relativeSplatPath: true,
-                              }}>
-                <Routes>
-                    <Route path="/" element={<Layout />}>
-                      <Route path="/order" element={<Order />} />
-                      <Route path="/prod" element={<Prod />} />
-                      <Route path="/predpr" element={<Predpr />} />
-                      <Route path="discovery" element={<Discovery />} />
-                      <Route path="*" element={<NotFound />} />
-                    </Route>
-                </Routes>
-              </BrowserRouter>
+              <SkladContextProvider>
+                <BrowserRouter future={{
+                                v7_startTransition: true,
+                                v7_relativeSplatPath: true,
+                                }}>
+                  <Routes>
+                      <Route path="/" element={<Layout />}>
+                        <Route path="/order" element={<Order />} />
+                        <Route path="/prod" element={<Prod />} />
+                        <Route path="/predpr" element={<Predpr />} />
+                        <Route path="/sklad" element={<Sklad />} />
+                        <Route path="discovery" element={<Discovery />} />
+                        <Route path="*" element={<NotFound />} />
+                      </Route>
+                  </Routes>
+                </BrowserRouter>
+              </SkladContextProvider>
             </PredprContextProvider>
           </CategContextProvider>
         </ProdContextProvider>
