@@ -38,8 +38,26 @@
         <button onclick="ins_upd_sklad()" title="Insert if empty id, else Update">Insert-Update</button>
     </div>
     <div id="sklad_div"></div>
+    <h2>Order <button onclick="get_order()">Get</button></h2>
+    <div style="display: inline-block;">
+        <input id="order_id" disabled size="3" title="id">
+        <input type="text" id="order_name" title="Order name">
+        <input type="number" id="order_predpr_id" title="Order Predpr_id">
+        <button onclick="ins_upd_order()" title="Insert if empty id, else Update">Insert-Update</button>
+    </div>
+    <div id="order_div"></div>
+    <h2>Spec <button onclick="get_spec()">Get</button></h2>
+    <div style="display: inline-block;">
+        <input id="spec_id" disabled size="3" title="id">
+        <input type="number" id="spec_order_id" title="Order ID">
+        <input type="number" id="spec_prod_id" title="Prod ID">
+        <input type="number" id="spec_kol" title="Spec KOL">
+        <button onclick="ins_upd_spec()" title="Insert if empty id, else Update">Insert-Update</button>
+    </div>
+    <div id="spec_div"></div>
 <script>
 
+//----Prod
 function ins_upd_prod(){
     let prod_id = document.getElementById("prod_id");
     let prod_name = document.getElementById("prod_name");
@@ -126,10 +144,10 @@ function get_prod(){
             let td = document.createElement('td');
             btn_upd = document.createElement('button');
             btn_upd.innerHTML = 'Upd';
-            btn_upd.addEventListener("click",move_data_for_update);
+            btn_upd.addEventListener("click",move_prod_data_for_update);
             btn_del = document.createElement('button');
             btn_del.innerHTML = 'Del';
-            btn_del.addEventListener("click",del_data);
+            btn_del.addEventListener("click",del_prod_data);
             td.append(btn_upd);
             td.append(btn_del);
             tr.append(td);
@@ -143,7 +161,7 @@ function get_prod(){
     })
 }
 
-function move_data_for_update(){
+function move_prod_data_for_update(){
     console.log(this);
     document.getElementById("prod_id").value = this.parentElement.parentElement.cells[0].innerHTML;
     document.getElementById("prod_name").value = this.parentElement.parentElement.cells[1].innerHTML;
@@ -152,7 +170,7 @@ function move_data_for_update(){
 }
 
 
-function del_data(){
+function del_prod_data(){
     fetch("prod",{
             method: "DELETE",
             headers: { "Accept": "application/json", "Content-Type": "application/json" },
@@ -495,6 +513,7 @@ function del_sklad_data(){
             alert("Error: " + ex.statusText);
         })
 }
+
 function ins_upd_sklad(){
     let sklad_id = document.getElementById("sklad_id");
     let sklad_name = document.getElementById("sklad_prod_id");
@@ -551,7 +570,270 @@ function ins_upd_sklad(){
     }
 }
 
+//----Order
+function ins_upd_order(){
+    let order_id = document.getElementById("order_id");
+    let order_name = document.getElementById("order_name");
+    let order_predpr_id = document.getElementById("order_predpr_id");
+    if(order_id.value == ''){
+        fetch("order",{
+            method: "POST",
+            headers: { "Accept": "application/json", "Content-Type": "application/json" },
+            body: JSON.stringify({
+                name: order_name.value,
+                predpr_id: parseInt(order_predpr_id.value)
+            })
+        })
+        .then(response =>  response.json())
+        .then((response) => {
+            if(response.status == 500){
+                return Promise.reject({statusText: response.message});
+            }
+            get_order();
+            order_id.value = '';
+            order_name.value = '';
+            order_predpr_id.value = '';
+            alert(response.statusText);
+        })
+        .catch((ex) => {
+            console.log("Error: " + ex.statusText);
+            alert("Error: " + ex.statusText);
+        })
+    } else {
+        fetch("order",{
+            method: "PUT",
+            headers: { "Accept": "application/json", "Content-Type": "application/json" },
+            body: JSON.stringify({
+                id: parseInt(order_id.value),
+                name: order_name.value,
+                predpr_id: parseInt(order_predpr_id.value)
+            })
+        })
+        .then((response) =>  response.json())
+        .then((response) => {
+            if(response.status == 500){
+            return Promise.reject({statusText: response.message});
+            }
+            get_order();
+            order_id.value = '';
+            order_name.value = '';
+            order_predpr_id.value = '';
+            alert(response.statusText);
+        })
+        .catch((ex) => {
+            console.log("Error: " + ex.statusText);
+            alert("Error: " + ex.statusText);
+        })
+    }
+}
 
+
+function get_order(){
+    document.getElementById("order_div").innerHTML='';
+    fetch("order",{
+        method: "GET",
+        headers: { "Accept": "application/json" }
+    })
+    .then(response =>  response.json())
+    .then((response) => {
+        if(response.status == 500){
+            return Promise.reject({statusText: response.message});
+        }
+        let t = document.createElement('table');
+        t.append(document.createElement('tr'));
+        for(const text of ['#','Наименование','Предприятие','']){
+            t.firstChild.append(Object.assign(document.createElement('th'), {innerHTML: text}));
+        }
+        for(const row of response){
+            let tr = document.createElement('tr');
+            for(const key in row){
+                tr.append(Object.assign(document.createElement('td'), {innerHTML: row[key]}))
+            }
+            let td = document.createElement('td');
+            btn_upd = document.createElement('button');
+            btn_upd.innerHTML = 'Upd';
+            btn_upd.addEventListener("click",move_order_data_for_update);
+            btn_del = document.createElement('button');
+            btn_del.innerHTML = 'Del';
+            btn_del.addEventListener("click",del_order_data);
+            td.append(btn_upd);
+            td.append(btn_del);
+            tr.append(td);
+            t.append(tr);
+        }  
+        document.getElementById("order_div").append(t);
+    })
+    .catch((ex) => {
+        console.log("Error: " + ex.statusText);
+        alert("Error: " + ex.statusText);
+    })
+}
+
+function move_order_data_for_update(){
+    console.log(this);
+    document.getElementById("order_id").value = this.parentElement.parentElement.cells[0].innerHTML;
+    document.getElementById("order_name").value = this.parentElement.parentElement.cells[1].innerHTML;
+    document.getElementById("order_predpr_id").value = 0;
+}
+
+
+function del_order_data(){
+    fetch("order",{
+            method: "DELETE",
+            headers: { "Accept": "application/json", "Content-Type": "application/json" },
+            body: JSON.stringify({
+                id: this.parentElement.parentElement.cells[0].innerHTML
+            })
+        })
+        .then((response) =>  response.json())
+        .then((response) => {
+            if(response.status == 500){
+            return Promise.reject({statusText: response.message});
+            }
+            get_order();
+            alert(response.statusText);
+        })
+        .catch((ex) => {
+            console.log("Error: " + ex.statusText);
+            alert("Error: " + ex.statusText);
+        })
+}
+
+
+//----Spec
+function ins_upd_spec(){
+    let spec_id = document.getElementById("spec_id");
+    let spec_order_id = document.getElementById("spec_order_id");
+    let spec_prod_id = document.getElementById("spec_prod_id");
+    let spec_kol = document.getElementById("spec_kol");
+    if(spec_id.value == ''){
+        fetch("spec",{
+            method: "POST",
+            headers: { "Accept": "application/json", "Content-Type": "application/json" },
+            body: JSON.stringify({
+                order_id: spec_order_id.value,
+                prod_id: spec_prod_id.value,
+                kol: spec_kol.value
+            })
+        })
+        .then(response =>  response.json())
+        .then((response) => {
+            if(response.status == 500){
+                return Promise.reject({statusText: response.message});
+            }
+            get_spec();
+            spec_id.value = '';
+            spec_order_id.value = '';
+            spec_prod_id.value = '';
+            spec_kol.value = '';
+            alert(response.statusText);
+        })
+        .catch((ex) => {
+            console.log("Error: " + ex.statusText);
+            alert("Error: " + ex.statusText);
+        })
+    } else {
+        fetch("spec",{
+            method: "PUT",
+            headers: { "Accept": "application/json", "Content-Type": "application/json" },
+            body: JSON.stringify({
+                id: parseInt(spec_id.value),
+                order_id: spec_order_id.value,
+                prod_id: spec_prod_id.value,
+                kol: spec_kol.value
+            })
+        })
+        .then((response) =>  response.json())
+        .then((response) => {
+            if(response.status == 500){
+            return Promise.reject({statusText: response.message});
+            }
+            get_spec();
+            spec_id.value = '';
+            spec_order_id.value = '';
+            spec_prod_id.value = '';
+            spec_kol.value = '';
+            alert(response.statusText);
+        })
+        .catch((ex) => {
+            console.log("Error: " + ex.statusText);
+            alert("Error: " + ex.statusText);
+        })
+    }
+}
+
+
+function get_spec(){
+    document.getElementById("spec_div").innerHTML='';
+    fetch("spec",{
+        method: "GET",
+        headers: { "Accept": "application/json" }
+    })
+    .then(response =>  response.json())
+    .then((response) => {
+        if(response.status == 500){
+            return Promise.reject({statusText: response.message});
+        }
+        let t = document.createElement('table');
+        t.append(document.createElement('tr'));
+        for(const text of ['#','Счет','Продукция','Количество','']){
+            t.firstChild.append(Object.assign(document.createElement('th'), {innerHTML: text}));
+        }
+        for(const row of response){
+            let tr = document.createElement('tr');
+            for(const key in row){
+                tr.append(Object.assign(document.createElement('td'), {innerHTML: row[key]}))
+            }
+            let td = document.createElement('td');
+            btn_upd = document.createElement('button');
+            btn_upd.innerHTML = 'Upd';
+            btn_upd.addEventListener("click",move_spec_data_for_update);
+            btn_del = document.createElement('button');
+            btn_del.innerHTML = 'Del';
+            btn_del.addEventListener("click",del_spec_data);
+            td.append(btn_upd);
+            td.append(btn_del);
+            tr.append(td);
+            t.append(tr);
+        }  
+        document.getElementById("spec_div").append(t);
+    })
+    .catch((ex) => {
+        console.log("Error: " + ex.statusText);
+        alert("Error: " + ex.statusText);
+    })
+}
+
+function move_spec_data_for_update(){
+    console.log(this);
+    document.getElementById("spec_id").value = this.parentElement.parentElement.cells[0].innerHTML;
+    document.getElementById("spec_order_id").value = '0';
+    document.getElementById("spec_prod_id").value = '0';
+    document.getElementById("spec_kol").value = this.parentElement.parentElement.cells[3].innerHTML;;
+}
+
+
+function del_spec_data(){
+    fetch("spec",{
+            method: "DELETE",
+            headers: { "Accept": "application/json", "Content-Type": "application/json" },
+            body: JSON.stringify({
+                id: this.parentElement.parentElement.cells[0].innerHTML
+            })
+        })
+        .then((response) =>  response.json())
+        .then((response) => {
+            if(response.status == 500){
+            return Promise.reject({statusText: response.message});
+            }
+            get_spec();
+            alert(response.statusText);
+        })
+        .catch((ex) => {
+            console.log("Error: " + ex.statusText);
+            alert("Error: " + ex.statusText);
+        })
+}
 
 
 </script>

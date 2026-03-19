@@ -1,11 +1,11 @@
 const { executeQuery, sendResponse, sendError } = require('../utils/queryHelpers');
 
-class ProdController {
+class OrderController {
   async getAll(req, res) {
     try {
-      const query = `SELECT p.id, p.name, p.price, c.name as categ 
-                     FROM prod p 
-                     LEFT JOIN categ c ON p.categ_id = c.id`;
+      const query = `SELECT o.id, o.name, p.name as predpr
+                     FROM \`order\` o 
+                     left join predpr p on o.predpr_id = p.id`;
       const rows = await executeQuery(query);
       sendResponse(res, rows);
     } catch (err) {
@@ -17,18 +17,18 @@ class ProdController {
     try {
       if (!req.body) return res.sendStatus(400);
       
-      const { name, price, categ_id } = req.body;
+      const { name, predpr_id } = req.body;
       
       // Валидация обязательных полей
-      if (!name || !price || !categ_id) {
-        return sendError(res, { message: 'name, price and categ_id are required' }, 400);
+      if (!name || !predpr_id) {
+        return sendError(res, { message: 'name and predpr_id are required' }, 400);
       }
 
       // Параметризованный запрос
-      const query = `INSERT INTO prod(name, price, categ_id) 
-                     VALUES(?, ?, ?)`;
+      const query = `INSERT INTO \`order\`(name, predpr_id) 
+                     VALUES(?, ?)`;
       
-      const result = await executeQuery(query, [name, price, categ_id]);
+      const result = await executeQuery(query, [name, predpr_id]);
       
       sendResponse(res, { 
         statusText: `Data inserted: ${result.affectedRows} row(s).`,
@@ -43,23 +43,22 @@ class ProdController {
     try {
       if (!req.body) return res.sendStatus(400);
       
-      const { id, name, price, categ_id } = req.body;
+      const { id, name, predpr_id } = req.body;
       
       // Валидация обязательных полей
-      if (!id || !name || !price || !categ_id) {
-        return sendError(res, { message: 'id, name, price and categ_id are required' }, 400);
+      if (!id || !name || !predpr_id) {
+        return sendError(res, { message: 'id, name and predpr_id are required' }, 400);
       }
 
       // Параметризованный запрос
-      const query = `UPDATE prod 
+      const query = `UPDATE \`order\` 
                      SET name = ?, 
-                         price = ?, 
-                         categ_id = ?
+                         predpr_id = ?
                      WHERE id = ?`;
       
-      console.log('Executing query:', query, 'with params:', [name, price, categ_id, id]);
+      console.log('Executing query:', query, 'with params:', [name, predpr_id, id]);
       
-      const result = await executeQuery(query, [name, price, categ_id, id]);
+      const result = await executeQuery(query, [name, predpr_id, id]);
       
       sendResponse(res, { 
         statusText: `Data updated: ${result.affectedRows} row(s).` 
@@ -81,7 +80,7 @@ class ProdController {
       }
 
       // Параметризованный запрос
-      const query = `DELETE FROM prod WHERE id = ?`;
+      const query = `DELETE FROM \`order\` WHERE id = ?`;
       
       console.log('Executing query:', query, 'with params:', [id]);
       
@@ -95,7 +94,7 @@ class ProdController {
     }
   }
 
-  // Дополнительный метод для получения продукта по ID (опционально)
+  // Дополнительный метод для получения заказа по ID
   async getById(req, res) {
     try {
       const { id } = req.params;
@@ -104,15 +103,15 @@ class ProdController {
         return sendError(res, { message: 'id is required' }, 400);
       }
 
-      const query = `SELECT p.id, p.name, p.price, c.name as categ 
-                     FROM prod p 
-                     LEFT JOIN categ c ON p.categ_id = c.id
-                     WHERE p.id = ?`;
+      const query = `SELECT o.id, o.name, p.name as predpr, o.predpr_id
+                     FROM \`order\` o 
+                     left join predpr p on o.predpr_id = p.id
+                     WHERE o.id = ?`;
       
       const rows = await executeQuery(query, [id]);
       
       if (rows.length === 0) {
-        return sendError(res, { message: 'Product not found' }, 404);
+        return sendError(res, { message: 'Order not found' }, 404);
       }
       
       sendResponse(res, rows[0]);
@@ -120,6 +119,28 @@ class ProdController {
       sendError(res, err);
     }
   }
+
+  // Дополнительный метод для получения заказов по предприятию
+  async getByPredprId(req, res) {
+    try {
+      const { predpr_id } = req.params;
+      
+      if (!predpr_id) {
+        return sendError(res, { message: 'predpr_id is required' }, 400);
+      }
+
+      const query = `SELECT o.id, o.name, p.name as predpr
+                     FROM \`order\` o 
+                     left join predpr p on o.predpr_id = p.id
+                     WHERE o.predpr_id = ?`;
+      
+      const rows = await executeQuery(query, [predpr_id]);
+      
+      sendResponse(res, rows);
+    } catch (err) {
+      sendError(res, err);
+    }
+  }
 }
 
-module.exports = new ProdController();
+module.exports = new OrderController();
